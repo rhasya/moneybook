@@ -1,9 +1,18 @@
 <template>
   <div id="app">
     <div id="nav">
-      <div class="container nav-container">
-        <span>{{ this.$store.state.email }}</span>
-        <a href="javascript:;" v-on:click="handleClick">{{ this.$store.state.btnName }}</a>
+      <div class="container">
+        <div class="menu-container">
+          <ul>
+            <li><router-link to="/">Home</router-link></li>
+            <li><router-link to="/category">Category</router-link></li>
+            <li><router-link to="/about">About</router-link></li>
+          </ul>
+        </div>
+        <div class="login-container">
+          <span>{{ this.$store.state.email }}</span>
+          <a href="javascript:;" v-on:click="handleClick">{{ this.$store.state.btnName }}</a>
+        </div>
       </div>
     </div>
     <div class="container">
@@ -19,17 +28,16 @@ export default {
     };
   },
   async created() {
-    console.log(this);
+    this.provider = new this.$firebase.auth.GoogleAuthProvider();
 
-    const provider = new this.$firebase.auth.GoogleAuthProvider();
-    this.provider = provider;
-
-    const user = this.$firebase.auth().onAuthStateChanged((user) => {
+    this.$firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.$store.commit('login', { email: user.email });
-      }
-      else {
+      } else {
         this.$store.commit('logout');
+        if (window.location.pathname !== '/') {
+          window.location = '/';
+        }
       }
     });
   },
@@ -37,22 +45,21 @@ export default {
     async handleClick() {
       if (this.$store.state.email) {
         await this.handleLogout();
-      }
-      else {
+      } else {
         await this.handleLogin();
       }
     },
     async handleLogin() {
       try {
-        const result = await this.$firebase.auth().signInWithPopup(this.provider);
-      } catch(e) {
+        await this.$firebase.auth().signInWithPopup(this.provider);
+      } catch (e) {
         console.error(e);
       }
     },
     async handleLogout() {
       try {
         await this.$firebase.auth().signOut();
-      } catch(error) {
+      } catch (e) {
         console.error(e);
       }
     },
@@ -61,27 +68,54 @@ export default {
 </script>
 <style scoped>
 #nav {
-  height: 24px;
+  height: 36px;
   background-color: black;
 }
 
-.nav-container {
+#nav .container {
+  width: 1024px;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+#nav ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+}
+
+#nav ul li {
+  color: white;
+}
+
+#nav ul li + li {
+  margin-left: 16px;
+}
+
+.menu-container {
+  display: flex;
+  height: 100%;
+  align-items: center;
+}
+
+.login-container {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  width: 1024px;
+  color: white;
+  height: 100%;
+}
+#nav a {
   color: white;
 }
-.nav-container a {
+#nav a:visited {
   color: white;
 }
-.nav-container a:visited {
-  color: white;
-}
-.nav-container a:hover {
+#nav a:hover {
   color: yellow;
 }
-.nav-container span + a {
+.login-container span + a {
   margin-left: 10px;
 }
 </style>
