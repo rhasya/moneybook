@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
+import 'firebase/firestore';
 
 
 class Firebase {
@@ -18,8 +19,8 @@ class Firebase {
     this.firebase = firebase;
   }
 
-  install(Vue_instance, options) {
-    Vue_instance.prototype.$firebase = this.firebase;
+  install(VueInstance, options) {
+    VueInstance.prototype.$firebase = this.firebase;
   }
 }
 
