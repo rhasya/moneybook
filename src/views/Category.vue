@@ -7,7 +7,11 @@
     </div>
     <div>
       <ul>
-        <li v-for="c in categories" v-bind:key="c.key">{{ c.name }}</li>
+        <li v-for="c in categories" v-bind:key="c.key">
+          <span>{{ c.name }}</span>
+          <button @click="handleDelete(c.key)">삭제</button>
+          <button @click="handleAppendCategory">추가</button>
+        </li>
       </ul>
     </div>
   </div>
@@ -30,31 +34,36 @@ export default {
     getUid() {
       return this.$firebase.auth().currentUser.uid;
     },
-    getList() {
+    async getList() {
       const db = this.$firebase.firestore();
-      db.collection('categories').where('author', '==', this.getUid()).get()
-        .then((snapshot) => {
-          snapshot.forEach((doc) => {
-            this.categories.push({ key: doc.id, ...doc.data() });
-            console.log(doc.id, '=>', doc.data());
-          });
-        })
-        .catch((e) => {
-          console.error(e);
-        });
+      const snapshot = await db.collection('categories').where('author', '==', this.getUid()).get();
+
+      const cats = [];
+      snapshot.forEach((doc) => {
+        cats.push({ key: doc.id, ...doc.data() });
+        // console.log(doc.id, '=>', doc.data());
+      });
+      cats.sort((a, b) => (a.created_at - b.created_at));
+      this.categories = cats;
     },
-    handleNewCategory() {
+    async handleNewCategory() {
       const db = this.$firebase.firestore();
-      db.collection('categories').add({
+      await db.collection('categories').add({
         name: this.categoryName,
+        created_at: Date.now(),
         author: this.getUid(),
-      })
-        .then((docRef) => {
-          console.log(docRef.id);
-          this.categoryName = '';
-          this.getList();
-        })
-        .catch((e) => { console.error(e); });
+      });
+
+      this.categoryName = '';
+      this.getList();
+    },
+    async handleDelete(key) {
+      const db = this.$firebase.firestore();
+      await db.collection('categories').doc(key).delete();
+      this.getList();
+    },
+    handleAppendCategory() {
+      // todo
     },
   },
 };
