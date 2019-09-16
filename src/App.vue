@@ -31,6 +31,7 @@ export default {
     this.provider = new this.$firebase.auth.GoogleAuthProvider();
 
     this.$firebase.auth().onAuthStateChanged((user) => {
+      console.log(Date.now(), 'onAuthStateChanged');
       if (user) {
         this.$store.commit('login', { email: user.email });
       } else {

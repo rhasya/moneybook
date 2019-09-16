@@ -7,10 +7,17 @@
     </div>
     <div>
       <ul>
-        <li v-for="c in categories" v-bind:key="c.key">
+        <li v-for="(c, idx) in categories" v-bind:key="c.key">
           <span>{{ c.name }}</span>
           <button @click="handleDelete(c.key)">삭제</button>
-          <button @click="handleAppendCategory">추가</button>
+          <button @click="handleAppendCategory(idx)">추가</button>
+          <ul>
+            <li v-for="t in c.types" v-bind:key="t">{{ t }}</li>
+            <li v-if="c.add">
+              <input type="text">
+              <button>저장</button>
+            </li>
+          </ul>
         </li>
       </ul>
     </div>
@@ -62,8 +69,10 @@ export default {
       await db.collection('categories').doc(key).delete();
       this.getList();
     },
-    handleAppendCategory() {
-      // todo
+    handleAppendCategory(idx) {
+      const obj = this.categories[idx];
+      obj.add = !obj.add;
+      this.$set(this.categories, idx, obj);
     },
   },
 };

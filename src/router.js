@@ -30,6 +30,7 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
+  console.log(Date.now(), 'router.beforeEach');
   // need login
   if (to.meta.auth) {
     const store = router.app.$store;
