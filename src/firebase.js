@@ -19,8 +19,8 @@ class Firebase {
     this.firebase = firebase;
   }
 
-  install(VueInstance, options) {
-    VueInstance.prototype.$firebase = this.firebase;
+  install(vueInstance, options) {
+    vueInstance.prototype.$firebase = this.firebase;
   }
 }
 

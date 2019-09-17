@@ -26,11 +26,17 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "category" */ './views/Category.vue'),
       meta: { auth: true },
     },
+    {
+      path: '/money',
+      name: 'money',
+      component: () => import(/* webpackChunkName: "money" */ './views/Money.vue'),
+      meta: { auth: true },
+    },
   ],
 });
 
 router.beforeEach((to, from, next) => {
-  console.log(Date.now(), 'router.beforeEach');
+  console.log(Date.now(), 'router.beforeEach', to);
   // need login
   if (to.meta.auth) {
     const store = router.app.$store;

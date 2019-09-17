@@ -1,6 +1,6 @@
 <template>
   <div class="category">
-    <h1>Category!</h1>
+    <h1>Category</h1>
     <div>
       <input type="text" v-model="categoryName">
       <button @click="handleNewCategory">New Category</button>
@@ -13,9 +13,9 @@
           <button @click="handleAppendCategory(idx)">추가</button>
           <ul>
             <li v-for="t in c.types" v-bind:key="t">{{ t }}</li>
-            <li v-if="c.add">
-              <input type="text">
-              <button>저장</button>
+            <li v-if="c.show">
+              <input type="text" v-model="c.subName">
+              <button @click="handleSubCategory(c)">저장</button>
             </li>
           </ul>
         </li>
@@ -47,7 +47,7 @@ export default {
 
       const cats = [];
       snapshot.forEach((doc) => {
-        cats.push({ key: doc.id, ...doc.data() });
+        cats.push({ key: doc.id, subName: '', ...doc.data() });
         // console.log(doc.id, '=>', doc.data());
       });
       cats.sort((a, b) => (a.created_at - b.created_at));
@@ -65,14 +65,33 @@ export default {
       this.getList();
     },
     async handleDelete(key) {
-      const db = this.$firebase.firestore();
-      await db.collection('categories').doc(key).delete();
-      this.getList();
+      if (confirm('Are you sure?')) {
+        const db = this.$firebase.firestore();
+        await db.collection('categories').doc(key).delete();
+        this.getList();
+      }
     },
     handleAppendCategory(idx) {
       const obj = this.categories[idx];
-      obj.add = !obj.add;
+      obj.show = !obj.show;
       this.$set(this.categories, idx, obj);
+    },
+    async handleSubCategory(obj) {
+      if (!obj.types) {
+        obj.types = [];
+      }
+      obj.types.push(obj.subName);
+
+      // Save data to db
+      const db = this.$firebase.firestore();
+      await db.collection('categories').doc(obj.key).set({
+        author: obj.author,
+        created_at: obj.created_at,
+        updated_at: Date.now(),
+        name: obj.name,
+        types: obj.types,
+      });
+      this.getList();
     },
   },
 };
