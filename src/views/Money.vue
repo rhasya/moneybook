@@ -1,10 +1,12 @@
 <template>
   <div class="money">
     <h1>Money</h1>
-    <p>{{ msg }}</p>
+    <MonthSelector></MonthSelector>
   </div>
 </template>
 <script>
+import MonthSelector from '@/components/MonthSelector.vue';
+
 export default {
   name: 'money',
   data() {
@@ -12,5 +14,8 @@ export default {
       msg: 'Hello World!',
     };
   },
+  components: {
+    MonthSelector: MonthSelector,
+  }
 };
 </script>
