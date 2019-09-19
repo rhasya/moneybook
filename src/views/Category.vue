@@ -39,7 +39,7 @@ export default {
   },
   methods: {
     getUid() {
-      return this.$firebase.auth().currentUser.uid;
+      return localStorage.uid;
     },
     async getList() {
       const db = this.$firebase.firestore();
@@ -65,7 +65,7 @@ export default {
       this.getList();
     },
     async handleDelete(key) {
-      if (confirm('Are you sure?')) {
+      if (window.confirm('Are you sure?')) {
         const db = this.$firebase.firestore();
         await db.collection('categories').doc(key).delete();
         this.getList();

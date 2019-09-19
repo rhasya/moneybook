@@ -35,20 +35,15 @@ const router = new Router({
   ],
 });
 
-router.beforeEach((to, from, next) => {
-  console.log(Date.now(), 'router.beforeEach', to);
-  // need login
+router.beforeResolve((to, from, next) => {
   if (to.meta.auth) {
-    const store = router.app.$store;
-    if (store == null || store.state.email == null) {
-      alert('need login!');
+    if (!localStorage.uid) {
+      alert('Need Login!');
       next('/');
-    } else {
-      next();
+      return;
     }
-  } else {
-    next();
   }
+  next();
 });
 
 export default router;

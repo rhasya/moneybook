@@ -11,8 +11,8 @@
           </ul>
         </div>
         <div class="login-container">
-          <span>{{ this.$store.state.email }}</span>
-          <a href="javascript:;" v-on:click="handleClick">{{ this.$store.state.btnName }}</a>
+          <span>{{ $store.state.email }}</span>
+          <a href="javascript:" @click="handleClick">{{ $store.state.btnName }}</a>
         </div>
       </div>
     </div>
@@ -29,16 +29,15 @@ export default {
     };
   },
   async created() {
+    // Login
     this.provider = new this.$firebase.auth.GoogleAuthProvider();
-
     this.$firebase.auth().onAuthStateChanged((user) => {
-      console.log(Date.now(), 'onAuthStateChanged');
       if (user) {
-        this.$store.commit('login', { email: user.email });
+        this.$store.commit('login', { uid: user.uid, email: user.email });
       } else {
         this.$store.commit('logout');
         if (window.location.pathname !== '/') {
-          window.location = '/';
+          this.$router.push('/');
         }
       }
     });

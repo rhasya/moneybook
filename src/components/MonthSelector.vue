@@ -7,13 +7,17 @@
 </template>
 <script>
 import * as moment from 'moment';
+
 export default {
-  name: 'monthselector',
+  name: 'month-selector',
   data() {
     return {
       now: null,
     };
   },
+  props: [
+    'value',
+  ],
   computed: {
     year() {
       return moment(this.now).get('year');
@@ -23,22 +27,26 @@ export default {
     },
   },
   created() {
-    this.now = moment().startOf('month').toDate();
+    if (this.$props.value) {
+      this.now = this.$props.value;
+    } else {
+      this.now = moment().startOf('month').toDate();
+    }
   },
   methods: {
     handleLeftClick() {
       if (moment(this.now) > moment('2001-01-31')) {
         this.now = moment(this.now).subtract(1, 'M').toDate();
-      }
-      else {
+        this.$emit('input', this.now);
+      } else {
         alert('더 이상 앞으로 갈 수 없습니다.');
       }
     },
     handleRightClick() {
       if (moment(this.now) < moment('2099-12-01')) {
         this.now = moment(this.now).add(1, 'M').toDate();
-      }
-      else {
+        this.$emit('input', this.now);
+      } else {
         alert('더 이상 뒤로 갈 수 없습니다.');
       }
     },
