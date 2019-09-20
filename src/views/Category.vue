@@ -9,7 +9,7 @@
       <ul>
         <li v-for="(c, idx) in categories" v-bind:key="c.key">
           <span>{{ c.name }}</span>
-          <button @click="handleDelete(c.key)">삭제</button>
+          <button @click="handleDelete(c.key)" v-if="c.name != '계정'">삭제</button>
           <button @click="handleAppendCategory(idx)">추가</button>
           <ul>
             <li v-for="t in c.types" v-bind:key="t">{{ t }}</li>

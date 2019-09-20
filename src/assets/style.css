@@ -10,6 +10,10 @@ a:visited {
   text-decoration: none;
 }
 
+table {
+  border-collapse: collapse;
+}
+
 .container {
   width: 1024px;
   margin: auto;
