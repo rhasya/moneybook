@@ -37,28 +37,25 @@ export default {
     };
   },
   created() {
-    // todo: get category list
     this.getList();
   },
   methods: {
-    getUid() {
-      return localStorage.uid;
-    },
-    save() {
-      const db = this.$firebase.firestore();
-      db.collection('categories').doc(localStorage.uid.substr(0, 20)).set({
-        author: localStorage.uid,
-        names: this.categories
-      });
-    },
     async getList() {
       const db = this.$firebase.firestore();
       const doc = await db.collection('categories').doc(localStorage.uid.substr(0, 20)).get();
       this.categories = doc.data().names;
     },
+    save() {
+      const db = this.$firebase.firestore();
+      db.collection('categories').doc(localStorage.uid.substr(0, 20)).set({
+        author: localStorage.uid,
+        names: this.categories,
+      });
+    },
     handleNewCategory() {
       this.categories.push({ name: this.categoryName, subNames: [] });
       this.categoryName = '';
+
       this.save();
     },
     handleDelCat(idx) {
@@ -75,16 +72,17 @@ export default {
     handleAddSub(idx) {
       const obj = this.categories[idx];
       obj.subNames.push(obj.subName);
-      delete obj.subName
-      delete obj.show
+      delete obj.subName;
+      delete obj.show;
 
       this.save();
     },
     handleDelSub(idx, idx2) {
       const obj = this.categories[idx];
       obj.subNames.splice(idx2, 1);
+
       this.save();
-    }
+    },
   },
 };
 </script>
