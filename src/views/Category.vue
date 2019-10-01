@@ -7,15 +7,18 @@
     </div>
     <div>
       <ul>
-        <li v-for="(c, idx) in categories" v-bind:key="c.key">
+        <li v-for="(c, idx) in categories" :key="idx">
           <span>{{ c.name }}</span>
-          <button @click="handleDelete(c.key)" v-if="c.name != '계정'">삭제</button>
-          <button @click="handleAppendCategory(idx)">추가</button>
+          <button @click="handleDelCat(idx)" v-if="c.name != '계좌'">삭제</button>
+          <button @click="handleAddCat(idx)">추가</button>
           <ul>
-            <li v-for="t in c.types" v-bind:key="t">{{ t }}</li>
+            <li v-for="(s, idx2) in c.subNames" :key="s">
+              <span>{{ s }}</span>
+              <button @click="handleDelSub(idx, idx2)">삭제</button>
+            </li>
             <li v-if="c.show">
               <input type="text" v-model="c.subName">
-              <button @click="handleSubCategory(c)">저장</button>
+              <button @click="handleAddSub(idx)">저장</button>
             </li>
           </ul>
         </li>
@@ -41,58 +44,58 @@ export default {
     getUid() {
       return localStorage.uid;
     },
+    save() {
+      const db = this.$firebase.firestore();
+      db.collection('categories').doc(localStorage.uid.substr(0, 20)).set({
+        author: localStorage.uid,
+        names: this.categories
+      });
+    },
     async getList() {
       const db = this.$firebase.firestore();
-      const snapshot = await db.collection('categories').where('author', '==', this.getUid()).get();
-
-      const cats = [];
-      snapshot.forEach((doc) => {
-        cats.push({ key: doc.id, subName: '', ...doc.data() });
-        // console.log(doc.id, '=>', doc.data());
-      });
-      cats.sort((a, b) => (a.created_at - b.created_at));
-      this.categories = cats;
+      const doc = await db.collection('categories').doc(localStorage.uid.substr(0, 20)).get();
+      this.categories = doc.data().names;
     },
-    async handleNewCategory() {
-      const db = this.$firebase.firestore();
-      await db.collection('categories').add({
-        name: this.categoryName,
-        created_at: Date.now(),
-        author: this.getUid(),
-      });
-
+    handleNewCategory() {
+      this.categories.push({ name: this.categoryName, subNames: [] });
       this.categoryName = '';
-      this.getList();
+      this.save();
     },
-    async handleDelete(key) {
+    handleDelCat(idx) {
       if (window.confirm('Are you sure?')) {
-        const db = this.$firebase.firestore();
-        await db.collection('categories').doc(key).delete();
-        this.getList();
+        this.categories.splice(idx, 1);
+        this.save();
       }
     },
-    handleAppendCategory(idx) {
+    handleAddCat(idx) {
       const obj = this.categories[idx];
       obj.show = !obj.show;
       this.$set(this.categories, idx, obj);
     },
-    async handleSubCategory(obj) {
-      if (!obj.types) {
-        obj.types = [];
-      }
-      obj.types.push(obj.subName);
+    handleAddSub(idx) {
+      const obj = this.categories[idx];
+      obj.subNames.push(obj.subName);
+      delete obj.subName
+      delete obj.show
 
-      // Save data to db
-      const db = this.$firebase.firestore();
-      await db.collection('categories').doc(obj.key).set({
-        author: obj.author,
-        created_at: obj.created_at,
-        updated_at: Date.now(),
-        name: obj.name,
-        types: obj.types,
-      });
-      this.getList();
+      this.save();
     },
+    handleDelSub(idx, idx2) {
+      const obj = this.categories[idx];
+      obj.subNames.splice(idx2, 1);
+      this.save();
+    }
   },
 };
 </script>
+<style scoped>
+li {
+  line-height: 2em;
+}
+li > span {
+  margin-right: 8px;
+}
+button + button {
+  margin-left: 8px;
+}
+</style>
