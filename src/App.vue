@@ -119,4 +119,7 @@ export default {
 .login-container span + a {
   margin-left: 10px;
 }
+div.container {
+  margin-bottom: 31px !important;
+}
 </style>

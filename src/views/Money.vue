@@ -2,6 +2,7 @@
   <div class="money">
     <h1>Money</h1>
     <month-selector :value="mm" @input="handleMonthInput"></month-selector>
+    <quick-box @input="handleQuick"></quick-box>
     <div class='table-container'>
       <table>
         <thead>
@@ -38,8 +39,8 @@
                   @input="handleChanged(idx)">
             </td>
             <td>
-              <input type="text" class="no-border right-align" v-model="l.amount"
-                  @input="handleChanged(idx)">
+              <input type="number" class="no-border right-align" v-model.number="l.amount"
+                  @input="handleChanged(idx)" lang="ko">
             </td>
             <td>
               <button @click="handleSave(idx)">Save</button>
@@ -57,6 +58,7 @@
 <script>
 import * as moment from 'moment';
 import MonthSelector from '../components/MonthSelector.vue';
+import QuickBox from '../components/QuickBox.vue';
 
 export default {
   name: 'money',
@@ -89,6 +91,7 @@ export default {
   },
   components: {
     'month-selector': MonthSelector,
+    'quick-box': QuickBox,
   },
   methods: {
     async load() {
@@ -117,7 +120,7 @@ export default {
       const id2 = moment(this.mm).format('YYYYMM');
 
       const data = {
-        lines: this.lines,
+        lines: this.lines.map(l => ({ ...l, isSaved: true })),
       };
 
       const db = this.$firebase.firestore();
@@ -179,6 +182,10 @@ export default {
         this.save();
       }
     },
+    handleQuick(val) {
+      val.isSaved = false;
+      this.lines.push(val);
+    },
   },
 };
 </script>
@@ -206,5 +213,14 @@ input.no-border {
 }
 input.right-align {
   text-align: right;
+}
+input[type=number] {
+  appearance: textfield;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button,
+input[type=date]::-webkit-inner-spin-button,
+input[type=date]::-webkit-outer-spin-button {
+  appearance: none;
 }
 </style>
