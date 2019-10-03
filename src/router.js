@@ -32,6 +32,12 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "money" */ './views/Money.vue'),
       meta: { auth: true },
     },
+    {
+      path: '/plan',
+      name: 'plan',
+      component: () => import(/* webpackChunkName: "money" */ './views/Plan.vue'),
+      meta: { auth: true },
+    },
   ],
 });
 

@@ -6,6 +6,7 @@
           <ul>
             <li><router-link to="/">Home</router-link></li>
             <li><router-link to="/category">Category</router-link></li>
+            <li><router-link to="/plan">Plan</router-link></li>
             <li><router-link to="/money">Money</router-link></li>
             <li><router-link to="/about">About</router-link></li>
           </ul>
