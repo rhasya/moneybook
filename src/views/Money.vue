@@ -119,8 +119,23 @@ export default {
       const id1 = this.uid.substr(0, 20);
       const id2 = moment(this.mm).format('YYYYMM');
 
+      let newLines = this.lines.map(l => ({
+        ...l,
+        amount: parseInt(l.amount, 10),
+        isSaved: true,
+      }));
+      newLines = newLines.sort((a, b) => {
+        let r = 0;
+        if (a.date < b.date) {
+          r = -1;
+        } else if (a.date > b.date) {
+          r = 1;
+        }
+        return r;
+      });
+
       const data = {
-        lines: this.lines.map(l => ({ ...l, isSaved: true })),
+        lines: newLines,
       };
 
       const db = this.$firebase.firestore();

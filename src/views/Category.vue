@@ -9,8 +9,10 @@
       <ul>
         <li v-for="(c, idx) in categories" :key="idx">
           <span>{{ c.name }}</span>
-          <button @click="handleDelCat(idx)" v-if="c.name != '계좌'">삭제</button>
+          <button @click="handleDelCat(idx)" v-if="c.canDelete">삭제</button>
           <button @click="handleAddCat(idx)">추가</button>
+          <button @click="handleUpCat(idx)" v-if="idx !== 0">▲</button>
+          <button @click="handleDownCat(idx)" v-if="idx !== categories.length - 1">▼</button>
           <ul>
             <li v-for="(s, idx2) in c.subNames" :key="s">
               <span>{{ s }}</span>
@@ -53,7 +55,11 @@ export default {
       });
     },
     handleNewCategory() {
-      this.categories.push({ name: this.categoryName, subNames: [] });
+      const obj = { name: this.categoryName, subNames: [], canDelete: true };
+      if (['계좌', '카드', '대출'].find(v => v === obj.name)) {
+        obj.canDelete = false;
+      }
+      this.categories.push(obj);
       this.categoryName = '';
 
       this.save();
@@ -68,6 +74,18 @@ export default {
       const obj = this.categories[idx];
       obj.show = !obj.show;
       this.$set(this.categories, idx, obj);
+    },
+    handleUpCat(idx) {
+      const tmp = this.categories[idx];
+      this.$set(this.categories, idx, this.categories[idx - 1]);
+      this.$set(this.categories, idx - 1, tmp);
+      this.save();
+    },
+    handleDownCat(idx) {
+      const tmp = this.categories[idx];
+      this.$set(this.categories, idx, this.categories[idx + 1]);
+      this.$set(this.categories, idx + 1, tmp);
+      this.save();
     },
     handleAddSub(idx) {
       const obj = this.categories[idx];

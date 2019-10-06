@@ -25,13 +25,13 @@ export default {
     'plan-month': PlanMonth,
   },
   created() {
-    this.mm = moment().startOf('M');
-    this.mmNext = moment().startOf('M').add(1, 'M');
+    this.mm = moment().startOf('M').toDate()
+    this.mmNext = moment().startOf('M').add(1, 'M').toDate();
   },
   methods: {
     handleMove(n) {
-      this.mm = this.mm.add(n, 'M');
-      this.mmNext = this.mmNext.add(n, 'M');
+      this.mm = moment(this.mm).add(n, 'M').toDate();
+      this.mmNext = moment(this.mmNext).add(n, 'M').toDate();
     },
   },
 };
